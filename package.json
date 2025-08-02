@@ -20,7 +20,7 @@
     "transparent"
   ],
   "engines": {
-    "node": "18.16.1"
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "axios": "^0.30.0",
