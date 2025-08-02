@@ -1,0 +1,82 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  build-win:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18.16.1'
+
+      - name: Install dependecies
+        run: npm ci
+
+      - name: Set next build version
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npm install --global semantic-release@17 && npm --no-git-tag-version --force version $(semantic-release --dry-run --plugins @semantic-release/release-notes-generator | grep -oE '# ([0-9]+.[0-9]+.[0-9]+)' | sed 's/# //')
+
+      - name: Create package folder
+        run: mkdir -p ao-loot-logger
+
+      - name: Copy assets
+        run: |
+          cp -r node_modules/ ao-loot-logger &&
+          cp -r src/ ao-loot-logger &&
+          cp package.json ao-loot-logger
+
+      - name: Package the app
+        run: npm install --global caxa && caxa --input ao-loot-logger --output "ao-loot-logger-win.exe" -- '{{caxa}}/node_modules/.bin/node' '{{caxa}}/src/index.js'
+
+      - uses: actions/upload-artifact@main
+        with:
+          name: ao-loot-logger-win
+          path: ao-loot-logger-win*
+          if-no-files-found: error
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18.16.1'
+
+      # not sure if we need libpcap to build for linux
+      # users probably need to have it installed in their computer eitherway.
+      - name: Install libpcap
+        run: sudo apt-get install libpcap-dev -y
+
+      - name: Install dependecies
+        run: npm ci
+
+      - name: Set next build version
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npm install --global semantic-release@17 && npm --no-git-tag-version --force version $(semantic-release --dry-run --plugins @semantic-release/release-notes-generator | grep -oE '# ([0-9]+.[0-9]+.[0-9]+)' | sed 's/# //')
+
+      - name: Create package folder
+        run: mkdir -p ao-loot-logger
+
+      - name: Copy assets
+        run: cp -r node_modules/ src/ package.json ao-loot-logger
+
+      - name: Package the app
+        run: npm install --global caxa && caxa --input ao-loot-logger --output "ao-loot-logger-linux" -- '{{caxa}}/node_modules/.bin/node' '{{caxa}}/src/index.js'
+
+      - uses: actions/upload-artifact@main
+        with:
+          name: ao-loot-logger-linux
+          path: ao-loot-logger-linux*
+          if-no-files-found: error

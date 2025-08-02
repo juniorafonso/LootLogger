@@ -1,0 +1,32 @@
+{
+  "name": "ao-loot-logger-clean",
+  "version": "1.0.0",
+  "description": "Clean version of AO Loot Logger - Logs ALL loots without any filtering or whitelist",
+  "main": "src/index.js",
+  "bin": "src/index.js",
+  "private": true,
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": {
+    "name": "Community Fork",
+    "email": "contact@yoursite.com"
+  },
+  "keywords": [
+    "node",
+    "albion",
+    "clean",
+    "transparent"
+  ],
+  "engines": {
+    "node": "18.16.1"
+  },
+  "dependencies": {
+    "axios": "^0.30.0",
+    "cap": "^0.2.1",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.4.1"
+  }
+}
