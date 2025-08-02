@@ -1,8 +1,8 @@
-# AO Loot Logger - Clean Version
+# LootLogger
 
 ## 🚀 100% Transparent & Fair Loot Logging
 
-This is a **clean, unfiltered version** of the AO Loot Logger that logs **ALL players** without any exceptions or paid exclusions.
+This is a **transparent and fair** loot logging tool that logs **ALL players** without any exceptions or paid exclusions.
 
 ### ✅ Key Features:
 - **Complete transparency** - Every loot event is logged
@@ -12,9 +12,25 @@ This is a **clean, unfiltered version** of the AO Loot Logger that logs **ALL pl
 
 **NOTE:** It does not work with a VPN (i.e. Exit Lag) or playing through Geforce Now.
 
-## 🔧 How to Use (Windows)
+## 🔧 How to Use
 
-1. Install [Npcap with WinPcap compatibility](https://nmap.org/npcap).
+### 📥 Option 1: Download Pre-built Executable (Recommended)
+
+1. Go to the [Releases page](../../releases)
+2. Download the latest version:
+   - **Windows**: `loot-logger-win.exe`
+   - **Linux**: `loot-logger-linux`
+3. Install the required dependencies:
+   - **Windows**: [Npcap with WinPcap compatibility](https://nmap.org/npcap)
+   - **Linux**: `sudo apt-get install libpcap-dev`
+4. Run the executable
+5. The log is written to file in the same folder (you can see the full path when the application starts)
+
+### 💻 Option 2: Run from Source Code
+
+#### Windows
+
+1. Install [Npcap with WinPcap compatibility](https://nmap.org/npcap)
 2. Download Node.js from https://nodejs.org
 3. Clone or download this repository
 4. Open terminal in the project folder and run:
@@ -22,22 +38,34 @@ This is a **clean, unfiltered version** of the AO Loot Logger that logs **ALL pl
    npm install
    npm start
    ```
-5. The log is written to file in the same folder (you can see the full path when the application starts).
 
-## 🔧 How to Use (Linux)
+#### Linux
 
-1. Install `libpcap-dev`: `sudo apt-get install libpcap-dev`.
+1. Install `libpcap-dev`: `sudo apt-get install libpcap-dev`
 2. Install Node.js from your package manager
-5. The log is written to file in the same folder (you can see the full path when the application starts).
+3. Clone or download this repository
+4. Open terminal in the project folder and run:
+   ```bash
+   npm install
+   npm start
+   ```
 
-## 🎯 What Makes This Version Different?
+## 🔄 Automated Builds
 
-### ❌ Removed from Original:
-- Player filtering/blacklist system
-- Remote configuration loading for exclusions
-- Hash-based player exclusion
-- Version checking and update notifications
-- Links to original developer's services
+This project uses GitHub Actions to automatically build executables for Windows and Linux:
+
+- **Every push to main**: Creates development builds available in [Actions](../../actions)
+- **Tagged releases**: Creates official releases with executables in [Releases](../../releases)
+- **Pull requests**: Validates builds to ensure code quality
+
+### Creating a Release
+
+To create a new release with builds:
+1. Create and push a git tag: `git tag v1.0.0 && git push origin v1.0.0`
+2. GitHub will automatically create builds and a release
+3. Download links will be available in the [Releases page](../../releases)
+
+## 🎯 Features
 
 ### ✅ What You Get:
 - **100% of all loot events** logged without exception
@@ -63,10 +91,4 @@ Perfect for importing into spreadsheets, databases, or custom analysis tools.
 
 ---
 
-**This clean version ensures fair and transparent loot logging for the entire Albion Online community.**
-
-Start a [discussion](https://github.com/matheussampaio/ao-loot-logger/discussions).
-
-## Found any problem?
-
-Create an [issue](https://github.com/matheussampaio/ao-loot-logger/issues) so we can get it fixed.
+**This version ensures fair and transparent loot logging for the entire Albion Online community.**

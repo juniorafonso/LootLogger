@@ -8,7 +8,7 @@ class Config {
 
     this.ROTATE_LOGGER_FILE_KEY = 'd'
     this.RESTART_NETWORK_FILE_KEY = 'r'
-    this.TITLE = `AO Loot Logger Clean - v${version} - All Players Logged`
+    this.TITLE = `LootLogger - v${version} - Transparent Loot Logging`
   }
 
   async init({ eventsOverride } = {}) {
@@ -21,7 +21,7 @@ class Config {
     }
 
     const response = await axios.get(
-      'https://matheus.sampaio.us/ao-loot-logger-configs/events-v8.0.0.json'
+      'https://raw.githubusercontent.com/broderickhyman/ao-bin-dumps/master/formatted/items.json'
     )
 
     this.events = response.data

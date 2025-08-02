@@ -1,34 +1,48 @@
-name: release
+name: Create Release
 
 on:
-  workflow_run:
-    workflows: ['build']
-    branches: [main]
-    types:
-      - completed
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  release:
+  create-release:
     runs-on: ubuntu-latest
-
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-
+    
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '18.16.1'
-
-      - uses: dawidd6/action-download-artifact@v6
-        with:
-          workflow: build.yml
-          workflow_conclusion: success
-
-      - name: Install semantic release
-        run: npm install -g semantic-release@17
-
-      - name: Create GitHub Release
+      - uses: actions/checkout@v3
+      
+      - name: Create Release
+        uses: actions/create-release@v1
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: semantic-release
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: LootLogger ${{ github.ref }}
+          body: |
+            ## LootLogger Release
+            
+            ### Features:
+            - 100% transparent loot logging
+            - No player filtering or whitelist
+            - Fair treatment for all players
+            - Complete data integrity
+            
+            ### Downloads:
+            - **Windows**: `loot-logger-win.exe`
+            - **Linux**: `loot-logger-linux`
+            
+            ### Requirements:
+            - Windows: Npcap with WinPcap compatibility
+            - Linux: libpcap-dev package
+            - Node.js v16 or higher (for source code)
+            
+            ### Installation:
+            1. Download the appropriate executable for your system
+            2. Install the required dependencies (Npcap for Windows, libpcap-dev for Linux)
+            3. Run the executable
+            
+            ---
+            **Transparent and fair loot logging for the entire Albion Online community.**
+          draft: false
+          prerelease: false

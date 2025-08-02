@@ -1,82 +1,107 @@
-name: build
+name: Build LootLogger
 
 on:
   push:
-    branches: [main]
-
-  workflow_dispatch:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ created ]
 
 jobs:
-  build-win:
+  build-windows:
     runs-on: windows-latest
-
+    
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '18.16.1'
-
-      - name: Install dependecies
-        run: npm ci
-
-      - name: Set next build version
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npm install --global semantic-release@17 && npm --no-git-tag-version --force version $(semantic-release --dry-run --plugins @semantic-release/release-notes-generator | grep -oE '# ([0-9]+.[0-9]+.[0-9]+)' | sed 's/# //')
-
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install --production
+        
       - name: Create package folder
-        run: mkdir -p ao-loot-logger
-
+        run: mkdir loot-logger
+        
       - name: Copy assets
         run: |
-          cp -r node_modules/ ao-loot-logger &&
-          cp -r src/ ao-loot-logger &&
-          cp package.json ao-loot-logger
-
+          xcopy /E /I node_modules loot-logger\node_modules
+          xcopy /E /I src loot-logger\src
+          copy package.json loot-logger\
+          
+      - name: Install caxa
+        run: npm install --global caxa
+        
       - name: Package the app
-        run: npm install --global caxa && caxa --input ao-loot-logger --output "ao-loot-logger-win.exe" -- '{{caxa}}/node_modules/.bin/node' '{{caxa}}/src/index.js'
-
-      - uses: actions/upload-artifact@main
+        run: caxa --input loot-logger --output "loot-logger-win.exe" -- "{{caxa}}/node_modules/.bin/node" "{{caxa}}/src/index.js"
+        
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: ao-loot-logger-win
-          path: ao-loot-logger-win*
+          name: loot-logger-windows
+          path: loot-logger-win.exe
           if-no-files-found: error
 
   build-linux:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '18.16.1'
-
-      # not sure if we need libpcap to build for linux
-      # users probably need to have it installed in their computer eitherway.
-      - name: Install libpcap
-        run: sudo apt-get install libpcap-dev -y
-
-      - name: Install dependecies
-        run: npm ci
-
-      - name: Set next build version
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npm install --global semantic-release@17 && npm --no-git-tag-version --force version $(semantic-release --dry-run --plugins @semantic-release/release-notes-generator | grep -oE '# ([0-9]+.[0-9]+.[0-9]+)' | sed 's/# //')
-
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install --production
+        
       - name: Create package folder
-        run: mkdir -p ao-loot-logger
-
+        run: mkdir -p loot-logger
+        
       - name: Copy assets
-        run: cp -r node_modules/ src/ package.json ao-loot-logger
-
+        run: |
+          cp -r node_modules/ loot-logger/
+          cp -r src/ loot-logger/
+          cp package.json loot-logger/
+          
+      - name: Install caxa
+        run: npm install --global caxa
+        
       - name: Package the app
-        run: npm install --global caxa && caxa --input ao-loot-logger --output "ao-loot-logger-linux" -- '{{caxa}}/node_modules/.bin/node' '{{caxa}}/src/index.js'
-
-      - uses: actions/upload-artifact@main
+        run: caxa --input loot-logger --output "loot-logger-linux" -- "{{caxa}}/node_modules/.bin/node" "{{caxa}}/src/index.js"
+        
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: ao-loot-logger-linux
-          path: ao-loot-logger-linux*
+          name: loot-logger-linux
+          path: loot-logger-linux
           if-no-files-found: error
+
+  release:
+    if: github.event_name == 'release'
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: loot-logger-windows
+          
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: loot-logger-linux
+          
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            loot-logger-win.exe
+            loot-logger-linux
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
