@@ -17,7 +17,7 @@ fi
 set -x
 
 # make sure we have a node_modules with only production dependencies
-rm -rf node_modules && npm install --production
+rm -rf node_modules && npm install --omit=dev
 
 # clear old builds (if any)
 rm -rf loot-logger && mkdir -p loot-logger

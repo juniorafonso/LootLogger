@@ -19,9 +19,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
           
       - name: Install dependencies
-        run: npm install --production
+        run: npm install --omit=dev
         
       - name: Create package folder
         run: mkdir loot-logger
@@ -55,9 +56,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+          
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libpcap-dev
           
       - name: Install dependencies
-        run: npm install --production
+        run: npm install --omit=dev
         
       - name: Create package folder
         run: mkdir -p loot-logger

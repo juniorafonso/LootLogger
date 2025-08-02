@@ -10,7 +10,7 @@
 
 ```bash
 # Install dependencies (production only)
-npm install --production
+npm install --omit=dev
 
 # Create build directory
 mkdir loot-logger
