@@ -91,6 +91,8 @@ async function main() {
     `Logs will be written to ${path.join(process.cwd(), LootLogger.logFileName)}`,
     '',
     `You can always press "${Config.ROTATE_LOGGER_FILE_KEY}" to start a new log file.`,
+    '',
+    `DONATIONS: You can support by donating in game assets, go to https://discord.gg/rmEyNdgpNM and ask for permissions to my island and drop whatever you want.`,
     ''
   ].join('\n'))
 }
