@@ -5,27 +5,44 @@ const { version } = require('../package.json')
 class Config {
   constructor() {
     this.events = {}
+    this.players = {}
 
     this.ROTATE_LOGGER_FILE_KEY = 'd'
     this.RESTART_NETWORK_FILE_KEY = 'r'
-    this.TITLE = `LootLogger - v${version} - Transparent Loot Logging`
+    this.TITLE = `AO Loot Logger - v${version}`
   }
 
-  async init({ eventsOverride } = {}) {
-    return this.loadEvents(eventsOverride)
+  async init({ eventsOverride, configsOverrride } = {}) {
+    return Promise.all([
+      this.loadEvents(eventsOverride)
+    ])
   }
 
   async loadEvents(eventsOverride) {
-    if (eventsOverride) {
-      return (this.events = eventsOverride)
+    // Event IDs hardcoded localmente para não depender da API externa
+    this.events = {
+      EvInventoryPutItem: 26,
+      EvNewCharacter: 29,
+      EvNewEquipmentItem: 30,
+      EvNewSiegeBannerItem: 31,
+      EvNewSimpleItem: 32,
+      EvNewLoot: 98,
+      EvAttachItemContainer: 99,
+      EvDetachItemContainer: 100,
+      EvCharacterStats: 143,
+      EvOtherGrabbedLoot: 274,
+      EvDeathEvent: 165,
+      EvNewLootChest: 300, // Placeholder - ajustar quando descoberto
+      EvUpdateLootChest: 301, // Placeholder - ajustar quando descoberto
+      OpInventoryMoveItem: 29,
+      OpJoin: 2
     }
 
-    const response = await axios.get(
-      'https://raw.githubusercontent.com/broderickhyman/ao-bin-dumps/master/formatted/items.json'
-    )
-
-    this.events = response.data
+    console.info('✅ Event IDs carregados localmente (sem dependência externa)')
+    return this.events
   }
+
+
 }
 
 module.exports = new Config()

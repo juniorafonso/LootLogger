@@ -1,12 +1,12 @@
 const fs = require('fs')
 
-const { red, green } = require('./utils/colors')
-const formatPlayerName = require('./utils/format-player-name')
+const { red, green, cyan } = require('./utils/colors')
 
-class LootLogger {
+class MarketLogger {
   constructor() {
     this.stream = null
     this.logFileName = null
+    this.processedItems = new Set()
 
     this.createNewLogFileName()
   }
@@ -23,15 +23,12 @@ class LootLogger {
       'timestamp_unix',
       'date_formatted',
       'time_formatted',
-      'looted_by__alliance',
-      'looted_by__guild',
-      'looted_by__name',
-      'item_id',
-      'item_name',
-      'quantity',
-      'looted_from__alliance',
-      'looted_from__guild',
-      'looted_from__name'
+      'item_type_id',
+      'quality_level',
+      'amount',
+      'unit_price',
+      'seller_name',
+      'item_id'
     ].join(';')
 
     this.stream.write(header + '\n')
@@ -55,15 +52,21 @@ class LootLogger {
       .map((n) => n.toString().padStart(2, '0'))
       .join('-')
 
-    this.logFileName = `loot-events-${datetime}.txt`
+    this.logFileName = `market-events-${datetime}.txt`
   }
 
-  write({ date, itemId, quantity, itemName, lootedBy, lootedFrom }) {
+  write({ date, itemTypeId, qualityLevel, amount, unitPrice, sellerName, itemId }) {
     if (this.stream == null) {
       this.init()
     }
 
-    // Timestamps detalhados para linha histórica
+    // Avoid duplicates using item ID
+    if (this.processedItems.has(itemId)) {
+      return
+    }
+    this.processedItems.add(itemId)
+
+    // Detailed timestamps for historical timeline
     const unixTimestamp = Math.floor(date.getTime() / 1000)
     const dateFormatted = date.toISOString().split('T')[0] // YYYY-MM-DD
     const timeFormatted = date.toISOString().split('T')[1].split('.')[0] // HH:MM:SS
@@ -73,42 +76,34 @@ class LootLogger {
       unixTimestamp,
       dateFormatted,
       timeFormatted,
-      lootedBy.allianceName ?? '',
-      lootedBy.guildName ?? '',
-      lootedBy.playerName,
-      itemId,
-      itemName,
-      quantity,
-      lootedFrom.allianceName ?? '',
-      lootedFrom.guildName ?? '',
-      lootedFrom.playerName
+      itemTypeId,
+      qualityLevel,
+      amount,
+      unitPrice,
+      sellerName,
+      itemId
     ].join(';')
 
     this.stream.write(line + '\n')
 
     console.info(
-      this.formatLootLog({
+      this.formatMarketLog({
         date,
-        lootedBy,
-        lootedFrom,
-        quantity,
-        itemName
+        itemTypeId,
+        qualityLevel,
+        amount,
+        unitPrice,
+        sellerName
       })
     )
   }
 
-  formatLootLog({ date, lootedBy, itemName, lootedFrom, quantity }) {
+  formatMarketLog({ date, itemTypeId, qualityLevel, amount, unitPrice, sellerName }) {
     const hours = date.getUTCHours().toString().padStart(2, '0')
     const minute = date.getUTCMinutes().toString().padStart(2, '0')
     const seconds = date.getUTCSeconds().toString().padStart(2, '0')
 
-    return `${hours}:${minute}:${seconds} UTC: ${formatPlayerName(
-      lootedBy,
-      green
-    )} looted ${quantity}x ${itemName} from ${formatPlayerName(
-      lootedFrom,
-      red
-    )}.`
+    return `${hours}:${minute}:${seconds} UTC: ${cyan(sellerName)} listed ${amount}x Item(${itemTypeId}) Q${qualityLevel} for ${green(unitPrice)} silver`
   }
 
   close() {
@@ -120,4 +115,4 @@ class LootLogger {
   }
 }
 
-module.exports = new LootLogger()
+module.exports = new MarketLogger()

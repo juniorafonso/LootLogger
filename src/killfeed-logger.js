@@ -3,7 +3,7 @@ const fs = require('fs')
 const { red, green } = require('./utils/colors')
 const formatPlayerName = require('./utils/format-player-name')
 
-class LootLogger {
+class KillfeedLogger {
   constructor() {
     this.stream = null
     this.logFileName = null
@@ -23,15 +23,11 @@ class LootLogger {
       'timestamp_unix',
       'date_formatted',
       'time_formatted',
-      'looted_by__alliance',
-      'looted_by__guild',
-      'looted_by__name',
-      'item_id',
-      'item_name',
-      'quantity',
-      'looted_from__alliance',
-      'looted_from__guild',
-      'looted_from__name'
+      'killed_player__guild',
+      'killed_player__name',
+      'killer_player__guild',
+      'killer_player__name',
+      'event_type'
     ].join(';')
 
     this.stream.write(header + '\n')
@@ -55,15 +51,15 @@ class LootLogger {
       .map((n) => n.toString().padStart(2, '0'))
       .join('-')
 
-    this.logFileName = `loot-events-${datetime}.txt`
+    this.logFileName = `killfeed-events-${datetime}.txt`
   }
 
-  write({ date, itemId, quantity, itemName, lootedBy, lootedFrom }) {
+  write({ date, killedPlayer, killerPlayer, eventType }) {
     if (this.stream == null) {
       this.init()
     }
 
-    // Timestamps detalhados para linha histórica
+    // Detailed timestamps for historical timeline
     const unixTimestamp = Math.floor(date.getTime() / 1000)
     const dateFormatted = date.toISOString().split('T')[0] // YYYY-MM-DD
     const timeFormatted = date.toISOString().split('T')[1].split('.')[0] // HH:MM:SS
@@ -73,42 +69,38 @@ class LootLogger {
       unixTimestamp,
       dateFormatted,
       timeFormatted,
-      lootedBy.allianceName ?? '',
-      lootedBy.guildName ?? '',
-      lootedBy.playerName,
-      itemId,
-      itemName,
-      quantity,
-      lootedFrom.allianceName ?? '',
-      lootedFrom.guildName ?? '',
-      lootedFrom.playerName
+      killedPlayer.guildName ?? '',
+      killedPlayer.playerName,
+      killerPlayer?.guildName ?? '',
+      killerPlayer?.playerName ?? 'Unknown',
+      eventType ?? 'death'
     ].join(';')
 
     this.stream.write(line + '\n')
 
     console.info(
-      this.formatLootLog({
+      this.formatKillfeedLog({
         date,
-        lootedBy,
-        lootedFrom,
-        quantity,
-        itemName
+        killedPlayer,
+        killerPlayer,
+        eventType
       })
     )
   }
 
-  formatLootLog({ date, lootedBy, itemName, lootedFrom, quantity }) {
+  formatKillfeedLog({ date, killedPlayer, killerPlayer, eventType }) {
     const hours = date.getUTCHours().toString().padStart(2, '0')
     const minute = date.getUTCMinutes().toString().padStart(2, '0')
     const seconds = date.getUTCSeconds().toString().padStart(2, '0')
 
-    return `${hours}:${minute}:${seconds} UTC: ${formatPlayerName(
-      lootedBy,
-      green
-    )} looted ${quantity}x ${itemName} from ${formatPlayerName(
-      lootedFrom,
-      red
-    )}.`
+    const killedName = formatPlayerName(killedPlayer, red)
+    const killerName = killerPlayer ? formatPlayerName(killerPlayer, green) : 'Unknown'
+
+    if (killerPlayer) {
+      return `${hours}:${minute}:${seconds} UTC: ${killedName} was killed by ${killerName}`
+    } else {
+      return `${hours}:${minute}:${seconds} UTC: ${killedName} died`
+    }
   }
 
   close() {
@@ -120,4 +112,4 @@ class LootLogger {
   }
 }
 
-module.exports = new LootLogger()
+module.exports = new KillfeedLogger()

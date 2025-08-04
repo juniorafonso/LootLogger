@@ -13,42 +13,46 @@ class DataHandler {
       }
 
       const eventId = event?.parameters?.[252]
+      
 
       switch (eventId) {
-        // case Config.events.EvInventoryPutItem:
-        //   return EventData.EvInventoryPutItem.handle(event)
+        case 26: // EvInventoryPutItem
+          return EventData.EvInventoryPutItem.handle(event)
 
-        case Config.events.EvNewCharacter:
+        case 29: // EvNewCharacter
           return EventData.EvNewCharacter.handle(event)
 
-        case Config.events.EvNewEquipmentItem:
+        case 30: // EvNewEquipmentItem
           return EventData.EvNewEquipmentItem.handle(event)
 
-        case Config.events.EvNewSiegeBannerItem:
+        case 31: // EvNewSiegeBannerItem
           return EventData.EvNewSiegeBannerItem.handle(event)
 
-        case Config.events.EvNewSimpleItem:
+        case 32: // EvNewSimpleItem
           return EventData.EvNewSimpleItem.handle(event)
 
-        case Config.events.EvNewLoot:
+        case 98: // EvNewLoot
           return EventData.EvNewLoot.handle(event)
 
-        case Config.events.EvAttachItemContainer:
+        case 99: // EvAttachItemContainer
           return EventData.EvAttachItemContainer.handle(event)
 
-        case Config.events.EvDetachItemContainer:
+        case 100: // EvDetachItemContainer
           return EventData.EvDetachItemContainer.handle(event)
 
-        case Config.events.EvCharacterStats:
+        case 143: // EvCharacterStats
           return EventData.EvCharacterStats.handle(event)
 
-        case Config.events.EvOtherGrabbedLoot:
+        case 274: // EvOtherGrabbedLoot
           return EventData.EvOtherGrabbedLoot.handle(event)
 
-        case Config.events.EvNewLootChest:
-          return EventData.EvNewLootChest.handle(event)
+        case 165: // EvDeathEvent - KILLFEED (Real)
+          return EventData.EvDeathEvent.handle(event)
 
-        // case Config.events.EvUpdateLootChest:
+        // case 300: // EvNewLootChest - Uncomment when needed
+        //   return EventData.EvNewLootChest.handle(event)
+
+        // case 301: // EvUpdateLootChest - Uncomment when needed
         //   return EventData.EvUpdateLootChest.handle(event)
 
         default:
@@ -69,7 +73,7 @@ class DataHandler {
 
     try {
       switch (eventId) {
-        case Config.events.OpInventoryMoveItem:
+        case 29: // OpInventoryMoveItem
           return RequestData.OpInventoryMoveItem.handle(event)
 
         default:
@@ -89,8 +93,11 @@ class DataHandler {
 
     try {
       switch (eventId) {
-        case Config.events.OpJoin:
+        case 2: // OpJoin
           return ResponseData.OpJoin.handle(event)
+
+        case 75: // EvMarketData - Market Pages
+          return EventData.EvMarketData.handle(event)
 
         default:
           if (process.env.LOG_UNPROCESSED) Logger.silly('handleResponseData', event.parameters)
