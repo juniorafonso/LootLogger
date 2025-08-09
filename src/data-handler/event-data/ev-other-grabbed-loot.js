@@ -3,6 +3,7 @@ const LootLogger = require('../../loot-logger')
 const Items = require('../../items')
 const ParserError = require('../parser-error')
 const Logger = require('../../utils/logger')
+const EventTimestamp = require('../../utils/event-timestamp')
 
 const name = 'EvOtherGrabbedLoot'
 
@@ -23,7 +24,7 @@ function handle(event) {
 
   const { itemId, itemName } = Items.get(itemNumId)
 
-  const date = new Date()
+  const date = EventTimestamp.getEventTime(event)
 
   LootLogger.write({
     date,

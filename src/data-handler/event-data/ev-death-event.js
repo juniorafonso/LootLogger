@@ -2,6 +2,7 @@ const MemoryStorage = require('../../storage/memory-storage')
 const KillfeedLogger = require('../../killfeed-logger')
 const ParserError = require('../parser-error')
 const Logger = require('../../utils/logger')
+const EventTimestamp = require('../../utils/event-timestamp')
 
 const name = 'EvDeathEvent'
 
@@ -56,7 +57,7 @@ function handle(event) {
   processedDeaths.add(deathId)
 
   // Precise timestamp for historical timeline
-  const date = new Date()
+  const date = EventTimestamp.getEventTime(event)
   const unixTimestamp = Math.floor(date.getTime() / 1000)
 
   // Create death record using KillfeedLogger

@@ -2,6 +2,7 @@ const MemoryStorage = require('../../storage/memory-storage')
 const MarketLogger = require('../../market-logger')
 const ParserError = require('../parser-error')
 const Logger = require('../../utils/logger')
+const EventTimestamp = require('../../utils/event-timestamp')
 
 const name = 'EvMarketData'
 
@@ -19,7 +20,7 @@ function handle(event) {
   }
 
   // Precise timestamp for historical timeline
-  const date = new Date()
+  const date = EventTimestamp.getEventTime(event)
   const unixTimestamp = Math.floor(date.getTime() / 1000)
 
   // Additional log for historical timeline debugging

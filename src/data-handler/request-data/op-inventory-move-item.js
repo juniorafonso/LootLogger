@@ -3,6 +3,7 @@ const LootLogger = require('../../loot-logger')
 const uuidStringify = require('../../utils/uuid-stringify')
 const Logger = require('../../utils/logger')
 const ParserError = require('../parser-error')
+const EventTimestamp = require('../../utils/event-timestamp')
 
 const name = 'OpInventoryMoveItem'
 
@@ -50,7 +51,7 @@ function handle(event) {
       MemoryStorage.players.getByName(loot.owner) ??
       MemoryStorage.players.add({ playerName: loot.owner })
     const { quantity, itemId, itemName } = loot
-    const date = new Date()
+    const date = EventTimestamp.getEventTime(event)
 
     if (lootedBy == null) {
       return Logger.warn(

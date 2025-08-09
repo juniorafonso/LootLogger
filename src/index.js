@@ -19,6 +19,8 @@ const AlbionNetwork = require('./network/albion-network')
 const DataHandler = require('./data-handler/data-handler')
 const Items = require('./items')
 const KeyboardInput = require('./keyboard-input')
+const EventTimestamp = require('./utils/event-timestamp')
+const AutoTimeSync = require('./utils/auto-time-sync')
 
 const Config = require('./config')
 
@@ -86,9 +88,26 @@ async function main() {
 
   KeyboardInput.init()
 
+  // Start automatic time synchronization by default
+  console.info(`🤖 ${green('Starting automatic synchronization...')}`)
+  AutoTimeSync.start() // Single sync at startup
+  
+  // Wait a moment for first sync to complete
+  setTimeout(() => {
+    const status = AutoTimeSync.getStatus()
+    if (status.isCalibrated) {
+      console.info(`✅ ${green('Automatic synchronization activated!')} Offset: ${status.offsetSeconds}s`)
+    } else {
+      console.info(`⚠️ ${yellow('First synchronization still in progress...')}`)
+    }
+  }, 3000)
+
   console.info([
     '',
     `Logs will be written to ${path.join(process.cwd(), LootLogger.logFileName)}`,
+    '',
+    `🤖 AUTOMATIC TIME SYNC: ENABLED (once at startup)`,
+    `   All players will have identical timestamps automatically!`,
     '',
     `You can always press "${Config.ROTATE_LOGGER_FILE_KEY}" to start a new log file.`,
     '',
@@ -114,6 +133,11 @@ function setWindowTitle(title) {
 
 function exit() {
   console.info('Exiting...')
+
+  // Stop auto-sync before exiting
+  if (AutoTimeSync.getStatus().isRunning) {
+    AutoTimeSync.stop()
+  }
 
   process.exit(0)
 }

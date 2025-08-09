@@ -9,6 +9,10 @@ class Config {
 
     this.ROTATE_LOGGER_FILE_KEY = 'd'
     this.RESTART_NETWORK_FILE_KEY = 'r'
+    this.SYNC_TIMESTAMP_KEY = 't'
+    this.DEBUG_TIMESTAMP_KEY = 'y'
+    this.AUTO_SYNC_TOGGLE_KEY = 'a'
+    this.AUTO_SYNC_STATUS_KEY = 's'
     this.TITLE = `AO Loot Logger - v${version}`
   }
 
