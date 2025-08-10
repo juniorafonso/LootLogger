@@ -99,9 +99,9 @@ class AutoTimeSyncService {
     // Usa APENAS TimeAPI.io para garantir que todos os players usem exatamente a mesma fonte
     const api = this.timeAPIs[0]; // TimeAPI.io
 
-    // Tenta até 3 vezes com timeouts maiores
+    // Tenta até 3 vezes com timeouts bem maiores para conexões lentas
     const maxRetries = 3;
-    const timeouts = [5000, 10000, 15000]; // 5s, 10s, 15s
+    const timeouts = [30000, 60000, 120000]; // 30s, 60s, 120s (2min)
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
