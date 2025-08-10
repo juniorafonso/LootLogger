@@ -31,7 +31,8 @@ class LootLogger {
       'quantity',
       'looted_from__alliance',
       'looted_from__guild',
-      'looted_from__name'
+      'looted_from__name',
+      'case_id'
     ].join(';')
 
     this.stream.write(header + '\n')
@@ -58,7 +59,7 @@ class LootLogger {
     this.logFileName = `loot-events-${datetime}.txt`
   }
 
-  write({ date, itemId, quantity, itemName, lootedBy, lootedFrom }) {
+  write({ date, itemId, quantity, itemName, lootedBy, lootedFrom, caseId }) {
     if (this.stream == null) {
       this.init()
     }
@@ -81,7 +82,8 @@ class LootLogger {
       quantity,
       lootedFrom.allianceName ?? '',
       lootedFrom.guildName ?? '',
-      lootedFrom.playerName
+      lootedFrom.playerName,
+      caseId ?? ''
     ].join(';')
 
     this.stream.write(line + '\n')

@@ -7,7 +7,7 @@ const EventTimestamp = require('../../utils/event-timestamp')
 
 const name = 'OpInventoryMoveItem'
 
-function handle(event) {
+function handle(event, caseId) {
   const { fromSlot, fromUuid, toSlot, toUuid } = parse(event)
 
   Logger.debug(
@@ -66,7 +66,8 @@ function handle(event) {
       quantity,
       itemName,
       lootedBy,
-      lootedFrom
+      lootedFrom,
+      caseId
     })
   }
 }

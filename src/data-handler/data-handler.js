@@ -16,8 +16,8 @@ class DataHandler {
       
 
       switch (eventId) {
-        case 26: // EvInventoryPutItem
-          return EventData.EvInventoryPutItem.handle(event)
+         case 26: //EvInventoryPutItem
+          return EventData.EvInventoryPutItem.handle(event, 'case26')
 
         case 29: // EvNewCharacter
           return EventData.EvNewCharacter.handle(event)
@@ -44,14 +44,14 @@ class DataHandler {
           return EventData.EvCharacterStats.handle(event)
 
         case 274: // EvOtherGrabbedLoot
-          return EventData.EvOtherGrabbedLoot.handle(event)
+          return EventData.EvOtherGrabbedLoot.handle(event, 'case274')
 
         case 165: // EvDeathEvent - KILLFEED (Real)
           return EventData.EvDeathEvent.handle(event)
 
-        // case 300: // EvNewLootChest - Uncomment when needed
-        //   return EventData.EvNewLootChest.handle(event)
-
+        case 300: // EvNewLootChest
+           return EventData.EvNewLootChest.handle(event)        
+        
         // case 301: // EvUpdateLootChest - Uncomment when needed
         //   return EventData.EvUpdateLootChest.handle(event)
 
@@ -74,7 +74,7 @@ class DataHandler {
     try {
       switch (eventId) {
         case 29: // OpInventoryMoveItem
-          return RequestData.OpInventoryMoveItem.handle(event)
+          return RequestData.OpInventoryMoveItem.handle(event, 'case29')
 
         default:
           if (process.env.LOG_UNPROCESSED) Logger.silly('handleRequestData', event.parameters)

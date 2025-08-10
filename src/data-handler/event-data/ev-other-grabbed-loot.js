@@ -7,7 +7,7 @@ const EventTimestamp = require('../../utils/event-timestamp')
 
 const name = 'EvOtherGrabbedLoot'
 
-function handle(event) {
+function handle(event, caseId) {
   const { isSilver, lootedFrom, lootedBy, itemNumId, quantity } = parse(event)
 
   Logger.debug('EvOtherGrabbedLoot', {
@@ -36,7 +36,8 @@ function handle(event) {
       MemoryStorage.players.add({ playerName: lootedBy }),
     lootedFrom:
       MemoryStorage.players.getByName(lootedFrom) ??
-      MemoryStorage.players.add({ playerName: lootedFrom })
+      MemoryStorage.players.add({ playerName: lootedFrom }),
+    caseId
   })
 }
 

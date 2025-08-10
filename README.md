@@ -77,7 +77,7 @@ To create a new release with builds:
 
 The application creates CSV-like files with the following format:
 ```
-timestamp_utc;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_name;quantity;looted_from__alliance;looted_from__guild;looted_from__name
+timestamp_utc;timestamp_unix;date_formatted;time_formatted;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_name;quantity;looted_from__alliance;looted_from__guild;looted_from__name;case_id
 ```
 
 Perfect for importing into spreadsheets, databases, or custom analysis tools.

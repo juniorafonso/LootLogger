@@ -6,7 +6,7 @@ const EventTimestamp = require('../../utils/event-timestamp')
 
 const name = 'EvInventoryPutItem'
 
-function handle(event) {
+function handle(event, caseId) {
   const { objectId } = parse(event)
 
   let loot = MemoryStorage.loots.getById(objectId)
@@ -37,7 +37,8 @@ function handle(event) {
     quantity,
     itemName,
     lootedBy,
-    lootedFrom
+    lootedFrom,
+    caseId
   })
 }
 
