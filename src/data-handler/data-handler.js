@@ -16,8 +16,8 @@ class DataHandler {
       
 
       switch (eventId) {
-         case 26: //EvInventoryPutItem
-          return EventData.EvInventoryPutItem.handle(event, 'case26')
+        // case 26: //EvInventoryPutItem
+        //  return EventData.EvInventoryPutItem.handle(event, 'case26')
 
         case 29: // EvNewCharacter
           return EventData.EvNewCharacter.handle(event)
