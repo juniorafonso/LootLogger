@@ -46,6 +46,7 @@ class AutoTimeSyncService {
     this.isRunning = true
     
     console.log(`🚀 [AutoSync] Performing single synchronization at startup`)
+    console.log(`⚠️ First synchronization still in progress...`)
     
     // Only sync once at startup
     this.performSync()
@@ -98,29 +99,44 @@ class AutoTimeSyncService {
     // Usa APENAS TimeAPI.io para garantir que todos os players usem exatamente a mesma fonte
     const api = this.timeAPIs[0]; // TimeAPI.io
 
-    try {
-      const response = await axios.get(api.url, { 
-        timeout: 3000,
-        headers: {
-          'User-Agent': 'LootLogger-TimeSync/1.0'
+    // Tenta até 3 vezes com timeouts maiores
+    const maxRetries = 3;
+    const timeouts = [5000, 10000, 15000]; // 5s, 10s, 15s
+
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        console.log(`🔄 [AutoSync] Attempting sync ${attempt + 1}/${maxRetries} (timeout: ${timeouts[attempt]/1000}s)...`);
+        
+        const response = await axios.get(api.url, { 
+          timeout: timeouts[attempt],
+          headers: {
+            'User-Agent': 'LootLogger-TimeSync/1.0'
+          }
+        });
+        
+        const serverTime = api.parser(response.data);
+        
+        if (serverTime && !isNaN(serverTime.getTime())) {
+          return serverTime;
         }
-      });
-      
-      const serverTime = api.parser(response.data);
-      
-      if (serverTime && !isNaN(serverTime.getTime())) {
-        return serverTime;
+      } catch (error) {
+        console.log(`⚠️ [AutoSync] Attempt ${attempt + 1} failed: ${error.message}`);
+        
+        // Se não é a última tentativa, continue
+        if (attempt < maxRetries - 1) {
+          continue;
+        }
+        
+        // Se chegou aqui, todas as tentativas falharam
+        if (!this.syncErrorShown) {
+          console.log(`❌ [AutoSync] Unable to synchronize with ${api.name} after ${maxRetries} attempts`);
+          this.syncErrorShown = true;
+        }
+        throw error;
       }
-    } catch (error) {
-      // Mostra erro apenas uma vez por sessão
-      if (!this.syncErrorShown) {
-        console.log(`❌ [AutoSync] Unable to synchronize with ${api.name}`);
-        this.syncErrorShown = true;
-      }
-      throw error;
     }
     
-    throw new Error('TimeAPI.io não retornou tempo válido');
+    throw new Error('TimeAPI.io não retornou tempo válido após todas as tentativas');
   }
 
   /**
