@@ -42,7 +42,7 @@ class Config {
       OpJoin: 2
     }
 
-    console.info('✅ Event IDs carregados localmente (sem dependência externa)')
+    console.info('✅ Event IDs loaded locally (no external dependency required)')
     return this.events
   }
 

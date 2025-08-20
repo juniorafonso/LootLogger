@@ -76,9 +76,25 @@ To create a new release with builds:
 ## 📊 Log Format
 
 The application creates CSV-like files with the following format:
+
+**Loot Events:**
 ```
-timestamp_utc;timestamp_unix;date_formatted;time_formatted;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_name;quantity;looted_from__alliance;looted_from__guild;looted_from__name;case_id
+date;utc_time;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_name;quantity;looted_from__alliance;looted_from__guild;looted_from__name;case_id;logger_version
 ```
+
+**Killfeed Events:**
+```
+date;utc_time;killed_player__guild;killed_player__name;killer_player__guild;killer_player__name;event_type;logger_version
+```
+
+**Market Events:**
+```
+date;utc_time;item_type_id;quality_level;amount;unit_price;seller_name;item_id;logger_version
+```
+
+- `date`: EU format (dd-mm-yyyy)
+- `utc_time`: UTC time format (hh:mm:ss)
+- `logger_version`: Version of LootLogger that created the log entry (e.g., "v1.2.3")
 
 Perfect for importing into spreadsheets, databases, or custom analysis tools.
 

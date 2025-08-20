@@ -28,7 +28,18 @@ class AutoTimeSyncService {
       {
         name: 'TimeAPI.io',
         url: 'https://timeapi.io/api/Time/current/zone?timeZone=UTC',
-        parser: (data) => new Date(data.dateTime)
+        parser: (data) => {
+          // Use UTC constructor to avoid timezone confusion
+          return new Date(Date.UTC(
+            data.year,
+            data.month - 1, // Month is 0-indexed in JS
+            data.day,
+            data.hour,
+            data.minute,
+            data.seconds,
+            data.milliSeconds || 0
+          ))
+        }
       }
     ]
   }

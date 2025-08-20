@@ -2,6 +2,7 @@ const fs = require('fs')
 
 const { red, green } = require('./utils/colors')
 const formatPlayerName = require('./utils/format-player-name')
+const VersionManager = require('./version')
 
 class LootLogger {
   constructor() {
@@ -19,10 +20,8 @@ class LootLogger {
     this.stream = fs.createWriteStream(this.logFileName, { flags: 'a' })
 
     const header = [
-      'timestamp_utc',
-      'timestamp_unix',
-      'date_formatted',
-      'time_formatted',
+      'date',
+      'utc_time',
       'looted_by__alliance',
       'looted_by__guild',
       'looted_by__name',
@@ -32,7 +31,8 @@ class LootLogger {
       'looted_from__alliance',
       'looted_from__guild',
       'looted_from__name',
-      'case_id'
+      'case_id',
+      'logger_version'
     ].join(';')
 
     this.stream.write(header + '\n')
@@ -64,14 +64,18 @@ class LootLogger {
       this.init()
     }
 
-    // Timestamps detalhados para linha histórica
-    const unixTimestamp = Math.floor(date.getTime() / 1000)
-    const dateFormatted = date.toISOString().split('T')[0] // YYYY-MM-DD
-    const timeFormatted = date.toISOString().split('T')[1].split('.')[0] // HH:MM:SS
+    // Format timestamps for EU format (dd-mm-yyyy) and UTC time (hh:mm:ss)
+    const day = date.getUTCDate().toString().padStart(2, '0')
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0')
+    const year = date.getUTCFullYear()
+    const dateFormatted = `${day}-${month}-${year}` // dd-mm-yyyy
+
+    const hours = date.getUTCHours().toString().padStart(2, '0')
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0')
+    const seconds = date.getUTCSeconds().toString().padStart(2, '0')
+    const timeFormatted = `${hours}:${minutes}:${seconds}` // hh:mm:ss
 
     const line = [
-      date.toISOString(),
-      unixTimestamp,
       dateFormatted,
       timeFormatted,
       lootedBy.allianceName ?? '',
@@ -83,7 +87,8 @@ class LootLogger {
       lootedFrom.allianceName ?? '',
       lootedFrom.guildName ?? '',
       lootedFrom.playerName,
-      caseId ?? ''
+      caseId ?? '',
+      VersionManager.getVersionForLog()
     ].join(';')
 
     this.stream.write(line + '\n')

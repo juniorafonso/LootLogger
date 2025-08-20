@@ -13,7 +13,7 @@ class EventTimestamp {
   /**
    * Gets consistent event timestamp
    * @param {Object} event - The network event (unused, kept for compatibility)
-   * @returns {Date} Synchronized timestamp
+   * @returns {Date} Synchronized timestamp in UTC
    */
   getEventTime(event) {
     const localTime = new Date()
@@ -30,10 +30,11 @@ class EventTimestamp {
 
   /**
    * Synchronizes local time with server time
-   * @param {Date} serverTime - Reference server time
+   * @param {Date} serverTime - Reference server time (UTC)
    */
   synchronizeTo(serverTime) {
     const localTime = new Date()
+    // Simple offset: server UTC time - local UTC time
     this.localTimeOffset = serverTime.getTime() - localTime.getTime()
     this.isCalibrated = true
   }

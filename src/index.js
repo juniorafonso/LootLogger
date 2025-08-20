@@ -21,6 +21,7 @@ const Items = require('./items')
 const KeyboardInput = require('./keyboard-input')
 const EventTimestamp = require('./utils/event-timestamp')
 const AutoTimeSync = require('./utils/auto-time-sync')
+const VersionManager = require('./version')
 
 const Config = require('./config')
 
@@ -30,6 +31,46 @@ async function main() {
   setWindowTitle(Config.TITLE)
 
   console.info(`${Config.TITLE}\n`)
+
+  // Store connection status and startup state
+  let isAlbionDetected = false
+  let startupComplete = false
+
+  // Initialize network listeners first to show them cleanly
+  AlbionNetwork.on('add-listener', (device) => {
+    console.info(`Listening to ${device.name}`)
+  })
+
+  AlbionNetwork.on('event-data', DataHandler.handleEventData)
+  AlbionNetwork.on('request-data', DataHandler.handleRequestData)
+  AlbionNetwork.on('response-data', DataHandler.handleResponseData)
+
+  AlbionNetwork.on('online', () => {
+    isAlbionDetected = true
+    if (startupComplete) {
+      console.info(`\n\t${green('ALBION DETECTED')}. Loot events should be logged.\n`)
+    }
+    setWindowTitle(`[ON] ${Config.TITLE}`)
+  })
+
+  AlbionNetwork.on('offline', () => {
+    isAlbionDetected = false
+    if (startupComplete) {
+      console.info(
+        `\n\t${red(
+          'ALBION NOT DETECTED'
+        )}.\n\n\tIf Albion is running, press "${Config.RESTART_NETWORK_FILE_KEY}" to restart the network listeners or restart AO Loot Logger.\n`
+      )
+    }
+    setWindowTitle(`[OFF] ${Config.TITLE}`)
+  })
+
+  // Start network initialization (this will trigger the listener messages)
+  AlbionNetwork.init()
+
+  // Now show version info and other startup information
+  console.info(`\n`)
+  await VersionManager.showVersionInfoAndCheck()
 
   await Items.init()
 
@@ -42,32 +83,6 @@ async function main() {
 
     return process.exit(1)
   }
-
-  AlbionNetwork.on('add-listener', (device) => {
-    console.info(`Listening to ${device.name}`)
-  })
-
-  AlbionNetwork.on('event-data', DataHandler.handleEventData)
-  AlbionNetwork.on('request-data', DataHandler.handleRequestData)
-  AlbionNetwork.on('response-data', DataHandler.handleResponseData)
-
-  AlbionNetwork.on('online', () => {
-    console.info(`\n\t${green('ALBION DETECTED')}. Loot events should be logged.\n`)
-    setWindowTitle(`[ON] ${Config.TITLE}`)
-  })
-
-  AlbionNetwork.on('offline', () => {
-    console.info(
-      `\n\t${red(
-        'ALBION NOT DETECTED'
-      )}.\n\n\tIf Albion is running, press "${Config.RESTART_NETWORK_FILE_KEY}" to restart the network listeners or restart AO Loot Logger.\n`
-    )
-
-    setWindowTitle(`[OFF] ${Config.TITLE}`)
-  })
-
-  AlbionNetwork.init()
-
 
   KeyboardInput.on('key-pressed', (key) => {
     const CTRL_C = '\u0003'
@@ -88,32 +103,62 @@ async function main() {
 
   KeyboardInput.init()
 
-  // Start automatic time synchronization by default
-  console.info(`🤖 ${green('Starting automatic synchronization...')}`)
-  AutoTimeSync.start() // Single sync at startup
+  // ========================================
+  // 📋 === TIME SYNC === ===================
+  // ========================================
+  console.info(`\n📋 === TIME SYNC ===`)
+  console.info(`🤖 ${green('Synchronizing with game servers...')}`)
+  console.info(`   This ensures accurate timestamps for all events`)
   
-  // Wait a moment for first sync to complete
-  setTimeout(() => {
+  // Perform sync and wait for completion
+  try {
+    await AutoTimeSync.performSync()
     const status = AutoTimeSync.getStatus()
     if (status.isCalibrated) {
-      console.info(`✅ ${green('Automatic synchronization activated!')} Offset: ${status.offsetSeconds}s`)
+      console.info(`✅ ${green('Time synchronization completed!')} Offset: ${status.offsetSeconds}s`)
+      
+      // Show current date/time that will be used in logs
+      const now = new Date()
+      const date = now.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+      const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      console.info(`📅 Current time for logs: ${date} ${time}`)
     } else {
-      console.info(`⚠️ ${yellow('First synchronization still in progress...')}`)
+      console.info(`⚠️ ${yellow('Time sync failed - using local time as fallback')}`)
     }
-  }, 3000)
+  } catch (error) {
+    console.info(`⚠️ ${yellow('Time sync failed - using local time as fallback')}`)
+  }
+  
+  console.info(`${'='.repeat(20)}`)
 
+  // ========================================
+  // 📋 === STARTUP COMPLETE === ============
+  // ========================================
   console.info([
     '',
-    `Logs will be written to ${path.join(process.cwd(), LootLogger.logFileName)}`,
+    `💰 DONATIONS & SUPPORT : Join https://discord.gg/rmEyNdgpNM`,
     '',
-    `🤖 AUTOMATIC TIME SYNC: ENABLED (once at startup)`,
-    `   All players will have identical timestamps automatically!`,
+    `📂 Logs will be written to ${path.join(process.cwd(), LootLogger.logFileName)}`,
     '',
-    `You can always press "${Config.ROTATE_LOGGER_FILE_KEY}" to start a new log file.`,
+    `⌨️  You can press "${Config.ROTATE_LOGGER_FILE_KEY}" anytime to start a new log file`,
     '',
-    `DONATIONS: You can support by donating in game assets, go to https://discord.gg/rmEyNdgpNM and ask for permissions to my island and drop whatever you want.`,
+    `🎮 Start playing Albion Online to begin logging events...`,
     ''
   ].join('\n'))
+
+  // Mark startup as complete and show connection status
+  startupComplete = true
+  
+  // Show current Albion detection status
+  if (isAlbionDetected) {
+    console.info(`\t${green('ALBION DETECTED')}. Loot events should be logged.\n`)
+  } else {
+    console.info(
+      `\t${red(
+        'ALBION NOT DETECTED'
+      )}.\n\n\tIf Albion is running, press "${Config.RESTART_NETWORK_FILE_KEY}" to restart the network listeners or restart AO Loot Logger.\n`
+    )
+  }
 }
 
 function restartNetwork() {
