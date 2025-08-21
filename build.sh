@@ -33,11 +33,19 @@ npm install --no-save caxa
 # package the app
 npx caxa --input loot-logger --output "${OUTPUT_FILE}" -- '{{caxa}}/node_modules/.bin/node' '{{caxa}}/src/index.js'
 
-# inject the ico into the .exe file
-# if [[ "$LINUX" -eq 0 ]]; then
-#   curl -L -O https://github.com/electron/rcedit/releases/latest/download/rcedit-x64.exe
+# inject the ico and metadata into the .exe file
+if [[ "$LINUX" -eq 0 ]]; then
+  echo "Adding icon and metadata to Windows executable..."
+  curl -L -O https://github.com/electron/rcedit/releases/latest/download/rcedit-x64.exe
 
-#   ./rcedit-x64.exe "loot-logger-win.exe" --set-icon "assets/logo.ico"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-icon "assets/logo.ico"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-version-string "ProductName" "Albion Online Loot Logger"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-version-string "FileDescription" "Transparent loot logging tool for Albion Online"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-version-string "CompanyName" "Community Fork"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-version-string "LegalCopyright" "Open Source Project - MIT License"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-file-version "1.2.5.0"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-product-version "1.2.5.0"
 
-#   rm -rf rcedit-x64.exe
-# fi
+  rm -rf rcedit-x64.exe
+  echo "Metadata added successfully!"
+fi
