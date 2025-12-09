@@ -34,7 +34,7 @@ class Config {
       EvAttachItemContainer: 99,
       EvDetachItemContainer: 100,
       EvCharacterStats: 143,
-      EvOtherGrabbedLoot: 274,
+      EvOtherGrabbedLoot: 275,
       EvDeathEvent: 165,
       EvNewLootChest: 300, // Placeholder - ajustar quando descoberto
       EvUpdateLootChest: 301, // Placeholder - ajustar quando descoberto
