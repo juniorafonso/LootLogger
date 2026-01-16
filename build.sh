@@ -43,8 +43,8 @@ if [[ "$LINUX" -eq 0 ]]; then
   ./rcedit-x64.exe "${OUTPUT_FILE}" --set-version-string "FileDescription" "Transparent loot logging tool for Albion Online"
   ./rcedit-x64.exe "${OUTPUT_FILE}" --set-version-string "CompanyName" "Community Fork"
   ./rcedit-x64.exe "${OUTPUT_FILE}" --set-version-string "LegalCopyright" "Open Source Project - MIT License"
-  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-file-version "1.2.8.0"
-  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-product-version "1.2.8.0"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-file-version "1.2.9.0"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-product-version "1.2.9.0"
 
   rm -rf rcedit-x64.exe
   echo "Metadata added successfully!"

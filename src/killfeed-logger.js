@@ -1,4 +1,5 @@
 const fs = require('fs')
+const EventTimestamp = require('./utils/event-timestamp')
 
 const { red, green } = require('./utils/colors')
 const formatPlayerName = require('./utils/format-player-name')
@@ -38,15 +39,16 @@ class KillfeedLogger {
   }
 
   createNewLogFileName() {
-    const d = new Date()
+    // Use UTC synchronized time for consistent file names
+    const d = EventTimestamp.getEventTime()
 
     const datetime = [
-      d.getFullYear(),
-      d.getMonth() + 1,
-      d.getDate(),
-      d.getHours(),
-      d.getMinutes(),
-      d.getSeconds()
+      d.getUTCFullYear(),
+      d.getUTCMonth() + 1,
+      d.getUTCDate(),
+      d.getUTCHours(),
+      d.getUTCMinutes(),
+      d.getUTCSeconds()
     ]
       .map((n) => n.toString().padStart(2, '0'))
       .join('-')

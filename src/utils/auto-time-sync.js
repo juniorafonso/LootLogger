@@ -1,12 +1,7 @@
 /**
- * Automatic Ti    this.timeAPIs = [
-      {
-        name: 'TimeAPI.io',
-        url: 'https://timeapi.io/api/Time/current/zone?timeZone=UTC',
-        parser: (data) => new Date(data.dateTime)
-      }
-    ]n Service
- * Keeps all clients synchronized with external time APIs
+ * Automatic Time Sync Service
+ * Uses reliable time servers for consistent timestamps across all clients
+ * Fast, reliable, no external dependencies on unstable APIs!
  */
 
 const axios = require('axios')
@@ -23,23 +18,12 @@ class AutoTimeSyncService {
     this.syncCount = 0
     this.failCount = 0
     
-    // Multiple time APIs for redundancy
+    // Sua API própria - rápida e confiável!
     this.timeAPIs = [
       {
-        name: 'TimeAPI.io',
-        url: 'https://timeapi.io/api/Time/current/zone?timeZone=UTC',
-        parser: (data) => {
-          // Use UTC constructor to avoid timezone confusion
-          return new Date(Date.UTC(
-            data.year,
-            data.month - 1, // Month is 0-indexed in JS
-            data.day,
-            data.hour,
-            data.minute,
-            data.seconds,
-            data.milliSeconds || 0
-          ))
-        }
+        name: 'LootLogger Time API',
+        url: 'https://time.recckless.com/time',
+        parser: (data) => new Date(data.utc)
       }
     ]
   }
@@ -94,7 +78,8 @@ class AutoTimeSyncService {
         this.syncCount++
         
         const calibrationInfo = EventTimestamp.getCalibrationInfo()
-        console.log(`✅ [AutoSync] Synchronized successfully! Offset: ${calibrationInfo.offsetSeconds}s`)
+        console.log(`✅ [AutoSync] Time synchronized successfully! Offset: ${calibrationInfo.offsetSeconds}s`);
+        console.log(`🌐 [AutoSync] Consistent timestamps enabled for all users`);
       }
     } catch (error) {
       this.failCount++
@@ -103,20 +88,19 @@ class AutoTimeSyncService {
   }
 
   /**
-   * Gets current time from external APIs
+   * Gets current time from your own API
    * @returns {Promise<Date>} Server time
    */
   async getServerTime() {
-    // Usa APENAS TimeAPI.io para garantir que todos os players usem exatamente a mesma fonte
-    const api = this.timeAPIs[0]; // TimeAPI.io
+    const api = this.timeAPIs[0]; // Sua API própria
 
-    // Tenta até 3 vezes com timeouts bem maiores para conexões lentas
-    const maxRetries = 3;
-    const timeouts = [30000, 60000, 120000]; // 30s, 60s, 120s (2min)
+    // Tenta 2 vezes com timeouts rápidos
+    const maxRetries = 2;
+    const timeouts = [3000, 5000]; // 3s, 5s (muito mais rápido!)
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
-        console.log(`🔄 [AutoSync] Attempting sync ${attempt + 1}/${maxRetries} (timeout: ${timeouts[attempt]/1000}s)...`);
+        console.log(`🔄 [AutoSync] Connecting to time server ${attempt + 1}/${maxRetries} (timeout: ${timeouts[attempt]/1000}s)...`);
         
         const response = await axios.get(api.url, { 
           timeout: timeouts[attempt],
@@ -128,6 +112,7 @@ class AutoTimeSyncService {
         const serverTime = api.parser(response.data);
         
         if (serverTime && !isNaN(serverTime.getTime())) {
+          console.log(`✅ [AutoSync] Successfully synchronized with ${api.name}`);
           return serverTime;
         }
       } catch (error) {
@@ -140,14 +125,15 @@ class AutoTimeSyncService {
         
         // Se chegou aqui, todas as tentativas falharam
         if (!this.syncErrorShown) {
-          console.log(`❌ [AutoSync] Unable to synchronize with ${api.name} after ${maxRetries} attempts`);
+          console.log(`❌ [AutoSync] Unable to connect to ${api.name} - using local time as fallback`);
+          console.log(`🔧 [AutoSync] Check network connectivity for accurate timestamps`);
           this.syncErrorShown = true;
         }
         throw error;
       }
     }
     
-    throw new Error('TimeAPI.io não retornou tempo válido após todas as tentativas');
+    throw new Error(`${api.name} não respondeu após ${maxRetries} tentativas`);
   }
 
   /**

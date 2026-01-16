@@ -106,9 +106,9 @@ async function main() {
   // ========================================
   // 📋 === TIME SYNC === ===================
   // ========================================
-  console.info(`\n📋 === TIME SYNC ===`)
-  console.info(`🤖 ${green('Synchronizing with game servers...')}`)
-  console.info(`   This ensures accurate timestamps for all events`)
+  console.info(`📋 === TIME SYNC ===`)
+  console.info(`🌐 ${green('Synchronizing with time servers...')}`)
+  console.info(`   Ensuring accurate timestamps for all events`)
   
   // Perform sync and wait for completion
   try {
@@ -117,11 +117,21 @@ async function main() {
     if (status.isCalibrated) {
       console.info(`✅ ${green('Time synchronization completed!')} Offset: ${status.offsetSeconds}s`)
       
-      // Show current date/time that will be used in logs
-      const now = new Date()
-      const date = now.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
-      const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-      console.info(`📅 Current time for logs: ${date} ${time}`)
+      // Show current date/time that will be used in logs (UTC synchronized)
+      const now = EventTimestamp.getEventTime()
+      const date = now.toLocaleDateString('pt-BR', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric',
+        timeZone: 'UTC'
+      })
+      const time = now.toLocaleTimeString('pt-BR', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        timeZone: 'UTC'
+      })
+      console.info(`📅 Current time for logs: ${date} ${time} UTC`)
     } else {
       console.info(`⚠️ ${yellow('Time sync failed - using local time as fallback')}`)
     }
@@ -136,7 +146,7 @@ async function main() {
   // ========================================
   console.info([
     '',
-    `💰 DONATIONS & SUPPORT : Join https://discord.gg/rmEyNdgpNM`,
+    `💰 DONATIONS & SUPPORT : Join https://discord.gg/geXXZsbzJb`,
     '',
     `📂 Logs will be written to ${path.join(process.cwd(), LootLogger.logFileName)}`,
     '',
