@@ -1,13 +1,15 @@
 # LootLogger
 
-## 🚀 100% Transparent & Fair Loot Logging
+## 🚀 100% Transparent & Fair Multi-Purpose Logging
 
-This is a **transparent and fair** loot logging tool that logs **ALL players** without any exceptions or paid exclusions.
+This is a **transparent and fair** logging tool forked from [matheussampaio/ao-loot-logger](https://github.com/matheussampaio/ao-loot-logger) that logs **ALL players** without any exceptions or paid exclusions. Enhanced with market and might logging capabilities.
 
 ### ✅ Key Features:
-- **Complete transparency** - Every loot event is logged
-- **No player filtering** - No whitelist/blacklist system
+- **Complete transparency** - Every event is logged (loot, market, might)
+- **No player filtering** - No whitelist/blacklist system removed from original
 - **Fair for everyone** - Equal treatment for all players
+- **Market logging** - Track market transactions and pricing
+- **Might logging** - Monitor might rankings and progression
 - **Independent** - No external dependencies for filtering
 
 **NOTE:** It does not work with a VPN (i.e. Exit Lag) or playing through Geforce Now.
@@ -69,9 +71,23 @@ To create a new release with builds:
 
 ### ✅ What You Get:
 - **100% of all loot events** logged without exception
+- **Complete market data** - Track all market transactions, prices, and trends
+- **Might rankings** - Monitor player might progression and leaderboards
+- **Killfeed events** - Full combat log with deaths and kills
 - **Fair treatment** for all players
 - **Complete data integrity** for your analysis
 - **Independence** from external filtering services
+
+### 📈 Market Logging:
+- **Real-time market data** - Capture all buy/sell orders
+- **Price tracking** - Monitor item price fluctuations
+- **Volume analysis** - Track trading volumes per item
+- **Quality levels** - Log item quality and enchantment levels
+
+### ⚔️ Might Logging:
+- **Player rankings** - Track might leaderboard changes
+- **Progression monitoring** - See might gains/losses over time
+- **Historical data** - Build comprehensive might progression databases
 
 ## 📊 Log Format
 
@@ -92,11 +108,30 @@ date;utc_time;killed_player__guild;killed_player__name;killer_player__guild;kill
 date;utc_time;item_type_id;quality_level;amount;unit_price;seller_name;item_id;logger_version
 ```
 
-- `date`: EU format (dd-mm-yyyy)
-- `utc_time`: UTC time format (hh:mm:ss)
-- `logger_version`: Version of LootLogger that created the log entry (e.g., "v1.2.3")
+**Might Events:**
+```
+category,player_name,might_points
+```
+
+- `date`: EU format (dd-mm-yyyy) - for loot, killfeed and market events
+- `utc_time`: UTC time format (hh:mm:ss) - for loot, killfeed and market events  
+- `logger_version`: Version of LootLogger that created the log entry (e.g., "v1.2.3") - for loot, killfeed and market events
+- `category`: Might category type (e.g., "GVGSEASON") - for might events only
+- `might_points`: Player's might points in the specified category
 
 Perfect for importing into spreadsheets, databases, or custom analysis tools.
+
+## 🌐 Online Log Viewer
+
+You can upload and analyze your log files using the **[Recckless.com](https://www.recckless.com)** website:
+
+- **📊 Loot Analysis** - Comprehensive loot event analysis and insights
+- **📈 Market Analysis** - Market data visualization and trend tracking  
+- **📁 Multi-file Upload** - Upload multiple .txt or .csv log files simultaneously
+- **🔍 Advanced Analytics** - Detailed analysis tools for your Albion Online data
+- **💬 Community Support** - Discord support for questions and help
+
+Simply upload your log files (.txt or .csv format) to get detailed analysis of your Albion Online loot and market data. The platform follows the same "No Pay-to-Hide" philosophy, ensuring fair analysis for all players.
 
 ## 🛠️ Technical Requirements
 
