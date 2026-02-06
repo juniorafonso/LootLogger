@@ -39,6 +39,7 @@ class Config {
       EvNewLootChest: 300, // Placeholder - ajustar quando descoberto
       EvUpdateLootChest: 301, // Placeholder - ajustar quando descoberto
       EvMarketData: 75,
+      EvMightRanking: 443, // Might ranking data
       OpInventoryMoveItem: 29,
       OpJoin: 2
     }

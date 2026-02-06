@@ -99,6 +99,9 @@ class DataHandler {
         case Config.events.EvMarketData: // 75 - EvMarketData - Market Pages
           return EventData.EvMarketData.handle(event)
 
+        case Config.events.EvMightRanking: // 443 - EvMightRanking - Might Rankings
+          return EventData.EvMightRanking.handle(event)
+
         default:
           if (process.env.LOG_UNPROCESSED) Logger.silly('handleResponseData', event.parameters)
       }

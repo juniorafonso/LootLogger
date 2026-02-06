@@ -106,11 +106,7 @@ class MarketLogger {
   }
 
   formatMarketLog({ date, itemTypeId, qualityLevel, amount, unitPrice, sellerName }) {
-    const hours = date.getUTCHours().toString().padStart(2, '0')
-    const minute = date.getUTCMinutes().toString().padStart(2, '0')
-    const seconds = date.getUTCSeconds().toString().padStart(2, '0')
-
-    return `${hours}:${minute}:${seconds} UTC: ${cyan(sellerName)} listed ${amount}x Item(${itemTypeId}) Q${qualityLevel} for ${green(unitPrice)} silver`
+    return `${cyan('[MARKET]')} seller: ${green(sellerName)} quantity: ${green(amount)} item: ${green(`${itemTypeId}`)} price: ${green(unitPrice)} silver`
   }
 
   close() {

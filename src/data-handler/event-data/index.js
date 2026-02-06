@@ -12,6 +12,7 @@ const EvOtherGrabbedLoot = require('./ev-other-grabbed-loot')
 const EvUpdateLootChest = require('./ev-update-loot-chest')
 const EvDeathEvent = require('./ev-death-event')
 const EvMarketData = require('./ev-market-data')
+const EvMightRanking = require('./ev-might-ranking')
 
 module.exports = {
   EvAttachItemContainer,
@@ -27,5 +28,6 @@ module.exports = {
   EvOtherGrabbedLoot,
   EvUpdateLootChest,
   EvDeathEvent,
-  EvMarketData
+  EvMarketData,
+  EvMightRanking
 }

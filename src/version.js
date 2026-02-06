@@ -208,6 +208,15 @@ class VersionManager {
         console.log(`📁 Download: ${cyan(this.releaseUrl)}`)
         console.log(`⚠️  ${yellow('Please update to get the latest features and bug fixes!')}`)
         
+        console.log(`========================\n`)
+        
+        return {
+          hasUpdate: true,
+          latestVersion: latestVersionClean,
+          releaseDate: releaseDate,
+          downloadUrl: this.releaseUrl
+        }
+        
       } else if (this.currentVersion === latestVersionClean) {
         // Same version - running latest released version
         console.log(`✅ Running latest version! (Released: ${releaseDate})`)
@@ -225,6 +234,8 @@ class VersionManager {
     }
     
     console.log(`========================\n`)
+    
+    return { hasUpdate: false }
   }
 
   /**

@@ -70,7 +70,7 @@ async function main() {
 
   // Now show version info and other startup information
   console.info(`\n`)
-  await VersionManager.showVersionInfoAndCheck()
+  const updateInfo = await VersionManager.showVersionInfoAndCheck()
 
   await Items.init()
 
@@ -156,18 +156,26 @@ async function main() {
     ''
   ].join('\n'))
 
+  // Show update warning if new version is available
+  if (updateInfo && updateInfo.hasUpdate) {
+    console.info([
+      '',
+      `🔥 ${red('='.repeat(60))}`,
+      `🚨 ${yellow('WARNING: NEW VERSION AVAILABLE!')}`,
+      `📥 Latest Version: ${green(`LootLogger v${updateInfo.latestVersion}`)} (${updateInfo.releaseDate})`,
+      `🔗 Download: ${cyan(updateInfo.downloadUrl)}`,
+      `⚠️  ${yellow('PLEASE UPDATE TO GET THE LATEST FEATURES AND BUG FIXES!')}`,
+      `🔥 ${red('='.repeat(60))}`,
+      ''
+    ].join('\n'))
+  }
+
   // Mark startup as complete and show connection status
   startupComplete = true
   
-  // Show current Albion detection status
+  // Show current Albion detection status (only if online, offline will be handled by event)
   if (isAlbionDetected) {
     console.info(`\t${green('ALBION DETECTED')}. Loot events should be logged.\n`)
-  } else {
-    console.info(
-      `\t${red(
-        'ALBION NOT DETECTED'
-      )}.\n\n\tIf Albion is running, press "${Config.RESTART_NETWORK_FILE_KEY}" to restart the network listeners or restart AO Loot Logger.\n`
-    )
   }
 }
 
