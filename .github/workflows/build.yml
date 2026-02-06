@@ -1,11 +1,9 @@
-name: Build LootLogger
+name: Build and Release LootLogger
 
 on:
   push:
     tags:
       - 'v*'
-  pull_request:
-    branches: [ main ]
 
 permissions:
   contents: write
@@ -106,13 +104,23 @@ jobs:
           
       - name: List downloaded files
         run: ls -la
+
+      - name: Get current date
+        id: release_date
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
         
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          name: LootLogger ${{ github.ref_name }} - Transparent Loot Tracking
+          name: 🚀 LootLogger ${{ github.ref_name }} - Transparent Loot Tracking
           body: |
             # 🚀 LootLogger ${{ github.ref_name }} - Transparent Loot Tracking
+
+            ## 📅 Release Information
+            - **Version**: ${{ github.ref_name }}
+            - **Released**: ${{ steps.release_date.outputs.date }}
+            - **Build**: Automated GitHub Actions
+            - **Items Database**: ✅ Latest ao-data synchronized
 
             ## 🎯 What is LootLogger?
 
@@ -125,6 +133,7 @@ jobs:
             - 📊 **Complete Data** - Full data integrity for analysis and tracking
             - 🔧 **Easy to Use** - Simple installation and setup
             - 🌐 **Cross-Platform** - Available for Windows and Linux
+            - 🔄 **Auto-Updated** - Items database automatically synchronized every 6 hours
 
             ## 📥 Downloads
 
@@ -138,40 +147,50 @@ jobs:
             ### Windows
             1. Download `loot-logger-win.exe`
             2. Install [Npcap with WinPcap compatibility](https://nmap.org/npcap)
-            3. Run the executable
+            3. Run the executable as Administrator
             4. Start Albion Online and the logger will capture loot events
 
             ### Linux
             1. Download `loot-logger-linux`
             2. Install libpcap: `sudo apt-get install libpcap-dev`
             3. Make executable: `chmod +x loot-logger-linux`
-            4. Run: `./loot-logger-linux`
+            4. Run with sudo: `sudo ./loot-logger-linux`
 
             ## 📊 Output Format
 
-            Creates CSV files with format:
-            ```
+            Creates CSV files with comprehensive loot data:
+            ```csv
             timestamp_utc;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_name;quantity;looted_from__alliance;looted_from__guild;looted_from__name
             ```
 
+            ## 🔄 Automatic Updates
+
+            This version includes the latest items database from ao-data repository:
+            - ✅ **Auto-sync**: Items fallback updated every 6 hours
+            - ✅ **Zero lag**: Always includes newest Albion Online items  
+            - ✅ **Reliable**: Falls back to local database if offline
+
             ## ⚠️ Important Notes
 
-            - **Does not work with VPN** (Exit Lag, etc.) or GeForce Now due to packet capture limitations
             - **Requires admin/root privileges** for network packet capture
-            - **Logs are saved locally** in the same directory as the executable
+            - **Does not work with VPN** (Exit Lag, etc.) or GeForce Now
+            - **Local logging only** - no data sent anywhere
+            - **Compatible** with all Albion Online clients
 
             ## 🛠️ Technical Details
 
             - Built with Node.js and packaged as standalone executables
             - Uses packet capture to monitor Albion Online network traffic
-            - No external dependencies or remote configurations
-            - Completely offline operation after initial setup
+            - No external dependencies after installation
+            - Completely offline operation with local item database
 
             ---
 
             **Join the transparent loot logging movement for Albion Online! 🎮**
 
             For issues, questions, or contributions, visit our [GitHub repository](https://github.com/juniorafonso/LootLogger).
+
+            > 💡 **Tip**: If you think someone is missing from logs, they probably aren't - LootLogger captures ALL loot events without filtering!
           files: |
             loot-logger-win.exe
             loot-logger-linux

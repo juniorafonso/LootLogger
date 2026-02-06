@@ -8,6 +8,9 @@ while getopts 'l' flag; do
   esac
 done
 
+# Get version from package.json
+VERSION=$(node -p "require('./package.json').version")
+
 if [[ "$LINUX" -eq 1 ]]; then
   OUTPUT_FILE="loot-logger-linux"
 else
@@ -43,8 +46,8 @@ if [[ "$LINUX" -eq 0 ]]; then
   ./rcedit-x64.exe "${OUTPUT_FILE}" --set-version-string "FileDescription" "Transparent loot logging tool for Albion Online"
   ./rcedit-x64.exe "${OUTPUT_FILE}" --set-version-string "CompanyName" "Community Fork"
   ./rcedit-x64.exe "${OUTPUT_FILE}" --set-version-string "LegalCopyright" "Open Source Project - MIT License"
-  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-file-version "1.2.9.0"
-  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-product-version "1.2.9.0"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-file-version "${VERSION}.0"
+  ./rcedit-x64.exe "${OUTPUT_FILE}" --set-product-version "${VERSION}.0"
 
   rm -rf rcedit-x64.exe
   echo "Metadata added successfully!"

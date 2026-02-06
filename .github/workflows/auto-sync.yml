@@ -1,0 +1,141 @@
+name: Auto Sync Items Fallback
+
+on:
+  schedule:
+    # Executa a cada 6 horas
+    - cron: '0 */6 * * *'
+  # Permite execução manual para testes
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: 'Enable debug mode'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  check-and-sync:
+    runs-on: ubuntu-latest
+    
+    outputs:
+      version_updated: ${{ steps.sync.outputs.version_updated }}
+      new_version: ${{ steps.sync.outputs.new_version }}
+      
+    steps:
+      - name: 🏗️ Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm install
+      
+      - name: ⚙️ Configure Git
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      
+      - name: 🔄 Run sync script
+        id: sync
+        run: |
+          echo "🚀 Starting sync process..."
+          
+          # Executar script de sync
+          if node scripts/sync-items.js; then
+            SYNC_RESULT=$?
+            if [ $SYNC_RESULT -eq 0 ]; then
+              echo "✅ No changes needed - files are already in sync"
+              echo "version_updated=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          else
+            SYNC_RESULT=$?
+            if [ $SYNC_RESULT -eq 1 ]; then
+              echo "📝 Files updated - proceeding with version bump"
+            else
+              echo "❌ Sync script failed with code $SYNC_RESULT"
+              exit 1
+            fi
+          fi
+          
+          # Verificar se há mudanças no git
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "📋 Git changes detected:"
+            git status --porcelain
+            
+            # Incrementar versão patch
+            echo "📈 Incrementing version..."
+            npm version patch --no-git-tag-version
+            
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "🏷️ New version: $NEW_VERSION"
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "version_updated=true" >> $GITHUB_OUTPUT
+            
+            # Adicionar mudanças
+            git add .
+            
+            # Commit
+            echo "💾 Creating commit..."
+            git commit -m "🔄 Auto-sync: Update items fallback to latest ao-data
+
+            - Updated items-fallback.js with latest data
+            - Version bumped to $NEW_VERSION
+            - Auto-sync triggered at $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+            
+            Changes:
+            $(git diff --name-only HEAD~1)"
+            
+            # Criar tag
+            echo "🏷️ Creating tag v$NEW_VERSION..."
+            git tag -a "v$NEW_VERSION" -m "🚀 Auto-release $NEW_VERSION
+
+            Automated release triggered by items fallback sync.
+            
+            - Items database updated to latest ao-data
+            - Build includes latest item definitions
+            - Released on $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            
+            # Push changes and tags
+            echo "📤 Pushing changes..."
+            git push origin main
+            git push origin --tags
+            
+            echo "🎉 Successfully synced and tagged version $NEW_VERSION"
+          else
+            echo "❓ Sync completed but no git changes detected"
+            echo "version_updated=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 📊 Summary
+        run: |
+          echo "## 🔄 Auto-Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.sync.outputs.version_updated }}" == "true" ]; then
+            echo "✅ **Items fallback successfully updated!**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- 🏷️ **New Version**: v${{ steps.sync.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+            echo "- 📦 **Build triggered**: Automatic release will be created" >> $GITHUB_STEP_SUMMARY
+            echo "- ⏰ **Sync Time**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ **No updates needed**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Items fallback is already up to date" >> $GITHUB_STEP_SUMMARY
+            echo "- ⏰ **Check Time**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Next sync in ~6 hours*" >> $GITHUB_STEP_SUMMARY
