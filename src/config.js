@@ -38,7 +38,7 @@ class Config {
       EvDeathEvent: 165,
       EvNewLootChest: 300, // Placeholder - ajustar quando descoberto
       EvUpdateLootChest: 301, // Placeholder - ajustar quando descoberto
-      EvMarketData: 75,
+      EvMarketData: 76,
       EvMightRanking: 443, // Might ranking data
       OpInventoryMoveItem: 29,
       OpJoin: 2

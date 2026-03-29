@@ -106,7 +106,7 @@ class MarketLogger {
   }
 
   formatMarketLog({ date, itemTypeId, qualityLevel, amount, unitPrice, sellerName }) {
-    return `${cyan('[MARKET]')} seller: ${green(sellerName)} quantity: ${green(amount)} item: ${green(`${itemTypeId}`)} price: ${green(unitPrice)} silver`
+    return `${cyan('[MARKET]')} seller: ${green(sellerName)} quantity: ${green(amount)} item: ${green(`${itemTypeId}`)} quality: ${green(qualityLevel)} price: ${green(unitPrice)} silver`
   }
 
   close() {
