@@ -38,7 +38,8 @@ class Config {
       EvDeathEvent: 165,
       EvNewLootChest: 300, // Placeholder - ajustar quando descoberto
       EvUpdateLootChest: 301, // Placeholder - ajustar quando descoberto
-      EvMarketData: 76,
+      EvMarketData: 75, // Market normal
+      EvBlackMarketData: 76, // Blackmarket de Caerleon
       EvMightRanking: 443, // Might ranking data
       OpInventoryMoveItem: 29,
       OpJoin: 2

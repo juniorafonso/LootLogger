@@ -29,6 +29,7 @@ class MarketLogger {
       'unit_price',
       'seller_name',
       'item_id',
+      'market_type',
       'logger_version'
     ].join(';')
 
@@ -57,7 +58,7 @@ class MarketLogger {
     this.logFileName = `market-events-${datetime}.txt`
   }
 
-  write({ date, itemTypeId, qualityLevel, amount, unitPrice, sellerName, itemId }) {
+  write({ date, itemTypeId, qualityLevel, amount, unitPrice, sellerName, itemId, isBlackMarket = false }) {
     if (this.stream == null) {
       this.init()
     }
@@ -79,6 +80,8 @@ class MarketLogger {
     const seconds = date.getUTCSeconds().toString().padStart(2, '0')
     const timeFormatted = `${hours}:${minutes}:${seconds}` // hh:mm:ss
 
+    const marketType = isBlackMarket ? 'blackmarket' : 'market'
+    
     const line = [
       dateFormatted,
       timeFormatted,
@@ -88,6 +91,7 @@ class MarketLogger {
       unitPrice,
       sellerName,
       itemId,
+      marketType,
       VersionManager.getVersionForLog()
     ].join(';')
 
@@ -100,13 +104,15 @@ class MarketLogger {
         qualityLevel,
         amount,
         unitPrice,
-        sellerName
+        sellerName,
+        isBlackMarket
       })
     )
   }
 
-  formatMarketLog({ date, itemTypeId, qualityLevel, amount, unitPrice, sellerName }) {
-    return `${cyan('[MARKET]')} seller: ${green(sellerName)} quantity: ${green(amount)} item: ${green(`${itemTypeId}`)} quality: ${green(qualityLevel)} price: ${green(unitPrice)} silver`
+  formatMarketLog({ date, itemTypeId, qualityLevel, amount, unitPrice, sellerName, isBlackMarket = false }) {
+    const marketType = isBlackMarket ? 'BLACKMARKET' : 'MARKET'
+    return `${cyan(`[${marketType}]`)} seller: ${green(sellerName)} quantity: ${green(amount)} item: ${green(`${itemTypeId}`)} quality: ${green(qualityLevel)} price: ${green(unitPrice)} silver`
   }
 
   close() {
