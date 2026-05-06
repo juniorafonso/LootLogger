@@ -6,7 +6,7 @@ const EventTimestamp = require('../../utils/event-timestamp')
 
 const name = 'EvMarketData'
 
-function handle(event) {
+function handle(event, isBlackMarket = false) {
   const { marketItems } = parse(event)
 
   Logger.debug('EvMarketData', {
@@ -35,7 +35,8 @@ function handle(event) {
       amount: item.amount,
       unitPrice: item.unitPrice,
       sellerName: item.sellerName,
-      itemId: item.id
+      itemId: item.id,
+      isBlackMarket
     })
   })
 }

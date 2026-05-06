@@ -34,13 +34,13 @@ class Config {
       EvAttachItemContainer: 99,
       EvDetachItemContainer: 100,
       EvCharacterStats: 143,
-      EvOtherGrabbedLoot: 275,
+      EvOtherGrabbedLoot: 277,
       EvDeathEvent: 165,
       EvNewLootChest: 300, // Placeholder - ajustar quando descoberto
       EvUpdateLootChest: 301, // Placeholder - ajustar quando descoberto
-      EvMarketData: 75, // Market normal
-      EvBlackMarketData: 76, // Blackmarket de Caerleon
-      EvMightRanking: 443, // Might ranking data
+      EvMarketData: 81, // Market normal
+      EvBlackMarketData: 82, // Blackmarket de Caerleon
+      EvMightRanking: 445, // Might ranking data
       OpInventoryMoveItem: 29,
       OpJoin: 2
     }

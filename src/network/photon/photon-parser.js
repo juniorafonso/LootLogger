@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events')
 
 const BufferReader = require('../../utils/buffer-reader')
-const Protocol16 = require('../protocol16/protocol16')
+const Protocol18 = require('../protocol18/protocol18')
 const { CrcCalculator } = require('../protocol16/crc-calculator')
 const { COMMAND_TYPE, MESSAGE_TYPE } = require('./constants')
 const Logger = require('../../utils/logger')
@@ -159,28 +159,28 @@ class PhotonParser extends EventEmitter {
 
     switch (messageType) {
       case MESSAGE_TYPE.OPERATION_REQUEST: {
-        const requestData = Protocol16.decodeOperationRequest(br)
+        const requestData = Protocol18.decodeOperationRequest(br)
 
         this.emit('request-data', requestData)
         break
       }
 
       case MESSAGE_TYPE.OPERATION_RESPONSE: {
-        const responseData = Protocol16.decodeOperationResponse(br)
+        const responseData = Protocol18.decodeOperationResponse(br)
 
         this.emit('response-data', responseData)
         break
       }
 
       case MESSAGE_TYPE.EVENT_DATA_TYPE: {
-        const eventData = Protocol16.decodeEventData(br)
+        const eventData = Protocol18.decodeEventData(br)
 
         this.emit('event-data', eventData)
         break
       }
 
       case MESSAGE_TYPE.INTERNAL_OPERATION_REQUEST: {
-        const internalRequestData = Protocol16.decodeOperationRequest(br)
+        const internalRequestData = Protocol18.decodeOperationRequest(br)
 
         internalRequestData.parameters[88] = this.tickCount
 
@@ -189,7 +189,7 @@ class PhotonParser extends EventEmitter {
       }
 
       case MESSAGE_TYPE.INTERNAL_OPERATION_RESPONSE: {
-        const internalResponseData = Protocol16.decodeOperationResponse(br)
+        const internalResponseData = Protocol18.decodeOperationResponse(br)
 
         this.emit('response-data', internalResponseData)
         break

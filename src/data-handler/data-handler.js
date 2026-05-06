@@ -8,12 +8,13 @@ const Config = require('../config')
 class DataHandler {
   static handleEventData(event) {
     try {
-      if (!event || event.eventCode !== 1) {
+      const eventId = event?.parameters?.[252]
+
+      // Protocol 18: eventCode in header is no longer always 1
+      // Filter by parameters[252] (event ID) instead
+      if (!event || !eventId) {
         return
       }
-
-      const eventId = event?.parameters?.[252]
-      
 
       switch (eventId) {
         case Config.events.EvInventoryPutItem: // 26 - EvInventoryPutItem
@@ -56,8 +57,7 @@ class DataHandler {
           return EventData.EvUpdateLootChest.handle(event)
 
         default:
-          if (process.env.LOG_UNPROCESSED)
-            Logger.silly('handleEventData', event.parameters)
+          break
       }
     } catch (error) {
       if (error instanceof ParserError) {
@@ -77,7 +77,7 @@ class DataHandler {
           return RequestData.OpInventoryMoveItem.handle(event, 'case29')
 
         default:
-          if (process.env.LOG_UNPROCESSED) Logger.silly('handleRequestData', event.parameters)
+          break
       }
     } catch (error) {
       if (error instanceof ParserError) {
@@ -96,14 +96,17 @@ class DataHandler {
         case Config.events.OpJoin: // 2 - OpJoin
           return ResponseData.OpJoin.handle(event)
 
-        case Config.events.EvMarketData: // 75 - EvMarketData - Market Pages
-          return EventData.EvMarketData.handle(event)
+        case Config.events.EvMarketData: // 81 - EvMarketData - Market Pages
+          return EventData.EvMarketData.handle(event, false)
+
+        case Config.events.EvBlackMarketData: // 82 - EvBlackMarketData - Black Market
+          return EventData.EvMarketData.handle(event, true)
 
         case Config.events.EvMightRanking: // 443 - EvMightRanking - Might Rankings
           return EventData.EvMightRanking.handle(event)
 
         default:
-          if (process.env.LOG_UNPROCESSED) Logger.silly('handleResponseData', event.parameters)
+          break
       }
     } catch (error) {
       if (error instanceof ParserError) {
