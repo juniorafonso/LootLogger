@@ -116,6 +116,12 @@ jobs:
             git push origin --tags
             
             echo "🎉 Successfully synced and tagged version $NEW_VERSION"
+            
+            # Trigger build workflow (GITHUB_TOKEN can't trigger workflows via push, so we call it explicitly)
+            echo "🔨 Triggering build workflow for v$NEW_VERSION..."
+            gh workflow run build.yml --ref "v$NEW_VERSION"
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           else
             echo "❓ Sync completed but no git changes detected"
             echo "version_updated=false" >> $GITHUB_OUTPUT
