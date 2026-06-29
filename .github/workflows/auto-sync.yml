@@ -56,6 +56,10 @@ jobs:
         run: |
           echo "🚀 Starting sync process..."
           
+          # Fetch latest tags from remote
+          echo "🔖 Fetching latest tags..."
+          git fetch --tags --force
+          
           # Executar script de sync
           if node scripts/sync-items.js; then
             SYNC_RESULT=$?
@@ -87,6 +91,13 @@ jobs:
             echo "🏷️ New version: $NEW_VERSION"
             echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
             echo "version_updated=true" >> $GITHUB_OUTPUT
+            
+            # Verificar se a tag já existe
+            if git rev-parse "v$NEW_VERSION" >/dev/null 2>&1; then
+              echo "⚠️ Tag v$NEW_VERSION already exists, deleting it..."
+              git tag -d "v$NEW_VERSION"
+              git push origin ":refs/tags/v$NEW_VERSION" 2>/dev/null || echo "Tag doesn't exist remotely yet"
+            fi
             
             # Adicionar mudanças
             git add .
