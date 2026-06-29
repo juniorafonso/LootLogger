@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+
+      - name: Update npm
+        run: npm install --global npm@11
           
       - name: Install dependencies
         run: npm install --omit=dev
