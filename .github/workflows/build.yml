@@ -21,9 +21,19 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+      
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+        
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
           
       - name: Install dependencies
         run: npm install --omit=dev
+        env:
+          npm_config_msvs_version: 2022
         
       - name: Create package folder
         run: mkdir loot-logger
