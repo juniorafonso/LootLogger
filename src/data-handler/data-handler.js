@@ -9,6 +9,7 @@ class DataHandler {
   static handleEventData(event) {
     try {
       const eventId = event?.parameters?.[252]
+      // console.log(event)
 
       // Protocol 18: eventCode in header is no longer always 1
       // Filter by parameters[252] (event ID) instead
@@ -70,11 +71,12 @@ class DataHandler {
 
   static handleRequestData(event) {
     const eventId = event?.parameters?.[253]
+    // console.log(event)
 
     try {
       switch (eventId) {
-        case Config.events.OpInventoryMoveItem: // 29 - OpInventoryMoveItem
-          return RequestData.OpInventoryMoveItem.handle(event, 'case29')
+        case Config.events.OpInventoryMoveItem: // 30 - OpInventoryMoveItem
+          return RequestData.OpInventoryMoveItem.handle(event, 'case30')
 
         default:
           break
